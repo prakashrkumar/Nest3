@@ -4,6 +4,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UsersModule } from './users/users.module';
+import  appConfig  from './config/app.config';
+import databaseConfig from './config/database.config';
 const ENV=process.env.NODE_ENV;
 @Module({
   imports: [
@@ -13,6 +15,8 @@ const ENV=process.env.NODE_ENV;
       envFilePath: [
        !ENV ? '.env' : `.env.${ENV.trim()}`
       ],
+      // jotna load karna hai custom config file
+      load:[appConfig,databaseConfig]
     }),
 
     // Database configuration
@@ -20,14 +24,16 @@ const ENV=process.env.NODE_ENV;
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => ({
-        type: 'mysql' as const,
-        host: configService.getOrThrow<string>('DB_HOST'),
-        port: Number(configService.getOrThrow('DB_PORT')),
-        username: configService.getOrThrow<string>('DB_USERNAME'),
-        password: configService.getOrThrow<string>('DB_PASSWORD'),
-        database: configService.getOrThrow<string>('DB_DATABASE'),
-        autoLoadEntities: true,
-        synchronize: true,
+        type: 'mysql' ,
+        autoLoadEntities:configService.get('database.autoLadEntites'),
+        synchronize:configService.get('database.syncronize'),
+        host: configService.get('database.host'),
+        port: +configService.get('database.port'),
+        username: configService.get('database.username'),
+        password: configService.get('database.password'),
+        database: configService.get('database.name'),
+       
+        
       }),
     }),
 

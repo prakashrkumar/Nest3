@@ -7,6 +7,7 @@ constructor(  private readonly configService :ConfigService){}
   
 
 getAllUser(){
+ 
   const env=this.configService.get('ENV_MODE')
   console.log(env)
   return "ok nest js"
